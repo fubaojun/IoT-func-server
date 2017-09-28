@@ -8,49 +8,37 @@
  * Modification history:
  *     2014/3/12, v1.0 create this file.
 *******************************************************************************/
-#include "ets_sys.h"
-#include "os_type.h"
-#include "osapi.h"
-#include "mem.h"
-#include "user_interface.h"
 
-#include "user_iot_version.h"
-#include "espconn.h"
-#include "user_json.h"
+#include <stdlib.h>
+#include "c_types.h"
+#include "osapi.h"
+
+
+
+#include "cJSON.h"
+#include "cJSON_Utils.h"
 #include "user_webserver.h"
 
-#include "upgrade.h"
-#if ESP_PLATFORM
-#include "user_esp_platform.h"
-#endif
 
-#ifdef SERVER_SSL_ENABLE
-#include "ssl/cert.h"
-#include "ssl/private_key.h"
-#endif
 
-#if LIGHT_DEVICE
-#include "user_light.h"
-#endif
-
-LOCAL struct station_config *sta_conf;
+/* LOCAL struct station_config *sta_conf;
 LOCAL struct softap_config *ap_conf;
-
+ */
 //LOCAL struct secrty_server_info *sec_server;
 //LOCAL struct upgrade_server_info *server;
 //struct lewei_login_info *login_info;
-LOCAL scaninfo *pscaninfo;
+/* LOCAL scaninfo *pscaninfo;
 struct bss_info *bss;
 struct bss_info *bss_temp;
 struct bss_info *bss_head;
-
+ */
 extern u16 scannum;
 
 LOCAL uint32 PostCmdNeeRsp = 1;
 
 uint8 upgrade_lock = 0;
-LOCAL os_timer_t app_upgrade_10s;
-LOCAL os_timer_t upgrade_check_timer;
+/* LOCAL os_timer_t app_upgrade_10s;
+LOCAL os_timer_t upgrade_check_timer; */
 
 /******************************************************************************
  * FunctionName : device_get
@@ -59,9 +47,10 @@ LOCAL os_timer_t upgrade_check_timer;
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-device_get(struct jsontree_context *js_ctx)
+//device_get(struct jsontree_context *js_ctx)
+device_get( )
 {
-    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
 
     if (os_strncmp(path, "manufacture", 11) == 0) {
         jsontree_write_string(js_ctx, "Espressif Systems");
@@ -80,12 +69,12 @@ device_get(struct jsontree_context *js_ctx)
         jsontree_write_string(js_ctx, "Light");
 #endif
     }
-
+ */
     return 0;
 }
 
-LOCAL struct jsontree_callback device_callback =
-    JSONTREE_CALLBACK(device_get, NULL);
+/* LOCAL struct jsontree_callback device_callback =
+    JSONTREE_CALLBACK(device_get, NULL); */
 /******************************************************************************
  * FunctionName : userbin_get
  * Description  : get up the user bin paramer as a JSON format
@@ -93,9 +82,10 @@ LOCAL struct jsontree_callback device_callback =
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-userbin_get(struct jsontree_context *js_ctx)
+//userbin_get(struct jsontree_context *js_ctx)
+userbin_get( )
 {
-    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
     char string[32];
 
     if (os_strncmp(path, "status", 8) == 0) {
@@ -111,17 +101,17 @@ userbin_get(struct jsontree_context *js_ctx)
     }
 
     jsontree_write_string(js_ctx, string);
-
+ */
     return 0;
 }
 
-LOCAL struct jsontree_callback userbin_callback =
+/* LOCAL struct jsontree_callback userbin_callback =
     JSONTREE_CALLBACK(userbin_get, NULL);
 
 JSONTREE_OBJECT(userbin_tree,
                 JSONTREE_PAIR("status", &userbin_callback),
                 JSONTREE_PAIR("user_bin", &userbin_callback));
-JSONTREE_OBJECT(userinfo_tree,JSONTREE_PAIR("user_info",&userbin_tree));
+JSONTREE_OBJECT(userinfo_tree,JSONTREE_PAIR("user_info",&userbin_tree)); */
 /******************************************************************************
  * FunctionName : version_get
  * Description  : set up the device version paramer as a JSON format
@@ -129,9 +119,10 @@ JSONTREE_OBJECT(userinfo_tree,JSONTREE_PAIR("user_info",&userbin_tree));
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-version_get(struct jsontree_context *js_ctx)
+//version_get(struct jsontree_context *js_ctx)
+version_get( )
 {
-    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
     char string[32];
 
     if (os_strncmp(path, "hardware", 8) == 0) {
@@ -148,11 +139,11 @@ version_get(struct jsontree_context *js_ctx)
     }
 
     jsontree_write_string(js_ctx, string);
-
+ */
     return 0;
 }
 
-LOCAL struct jsontree_callback version_callback =
+/* LOCAL struct jsontree_callback version_callback =
     JSONTREE_CALLBACK(version_get, NULL);
 
 JSONTREE_OBJECT(device_tree,
@@ -168,21 +159,22 @@ JSONTREE_OBJECT(info_tree,
                 JSONTREE_PAIR("Device", &device_tree));
 
 JSONTREE_OBJECT(INFOTree,
-                JSONTREE_PAIR("info", &info_tree));
+                JSONTREE_PAIR("info", &info_tree)); */
 
 LOCAL int ICACHE_FLASH_ATTR
-connect_status_get(struct jsontree_context *js_ctx)
+//connect_status_get(struct jsontree_context *js_ctx)
+connect_status_get( )
 {
-    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
 
     if (os_strncmp(path, "status", 8) == 0) {
         jsontree_write_int(js_ctx, user_esp_platform_get_connect_status());
     }
-
+ */
     return 0;
 }
 
-LOCAL struct jsontree_callback connect_status_callback =
+/* LOCAL struct jsontree_callback connect_status_callback =
     JSONTREE_CALLBACK(connect_status_get, NULL);
 
 JSONTREE_OBJECT(status_sub_tree,
@@ -192,7 +184,7 @@ JSONTREE_OBJECT(connect_status_tree,
                 JSONTREE_PAIR("Status", &status_sub_tree));
 
 JSONTREE_OBJECT(con_status_tree,
-                JSONTREE_PAIR("info", &connect_status_tree));
+                JSONTREE_PAIR("info", &connect_status_tree)); */
 
 #if PLUG_DEVICE
 /******************************************************************************
@@ -202,14 +194,15 @@ JSONTREE_OBJECT(con_status_tree,
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-status_get(struct jsontree_context *js_ctx)
+//status_get(struct jsontree_context *js_ctx)
+status_get( )
 {
-    if (user_plug_get_status() == 1) {
+/*     if (user_plug_get_status() == 1) {
         jsontree_write_int(js_ctx, 1);
     } else {
         jsontree_write_int(js_ctx, 0);
     }
-
+ */
     return 0;
 }
 
@@ -221,9 +214,10 @@ status_get(struct jsontree_context *js_ctx)
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-status_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
+//status_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
+status_set( )
 {
-    int type;
+/*     int type;
 
     while ((type = jsonparse_next(parser)) != 0) {
         if (type == JSON_TYPE_PAIR_NAME) {
@@ -236,11 +230,11 @@ status_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
             }
         }
     }
-
+ */
     return 0;
 }
 
-LOCAL struct jsontree_callback status_callback =
+/* LOCAL struct jsontree_callback status_callback =
     JSONTREE_CALLBACK(status_get, status_set);
 
 JSONTREE_OBJECT(status_tree,
@@ -248,14 +242,15 @@ JSONTREE_OBJECT(status_tree,
 JSONTREE_OBJECT(response_tree,
                 JSONTREE_PAIR("Response", &status_tree));
 JSONTREE_OBJECT(StatusTree,
-                JSONTREE_PAIR("switch", &response_tree));
+                JSONTREE_PAIR("switch", &response_tree)); */
 #endif
 
 #if LIGHT_DEVICE
 LOCAL int ICACHE_FLASH_ATTR
-light_status_get(struct jsontree_context *js_ctx)
+//light_status_get(struct jsontree_context *js_ctx)
+light_status_get( )
 {
-    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
 
     if (os_strncmp(path, "red", 3) == 0) {
         jsontree_write_int(js_ctx, user_light_get_duty(LIGHT_RED));
@@ -278,14 +273,15 @@ light_status_get(struct jsontree_context *js_ctx)
     } else if (os_strncmp(path, "period", 6) == 0) {
         jsontree_write_int(js_ctx, user_light_get_period());
     }
-
+ */
     return 0;
 }
 
 LOCAL int ICACHE_FLASH_ATTR
-light_status_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
+//light_status_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
+light_status_set( )
 {
-    int type;
+/*     int type;
     static uint32 r,g,b,cw,ww,period;
     period = 1000;
     cw=0;
@@ -371,10 +367,10 @@ light_status_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser
             light_sleep_flg =0;
         }
     }
-    light_set_aim(r,g,b,cw,ww,period);
+    light_set_aim(r,g,b,cw,ww,period); */
     return 0;
 }
-
+/* 
 LOCAL struct jsontree_callback light_callback =
     JSONTREE_CALLBACK(light_status_get, light_status_set);
 
@@ -389,7 +385,7 @@ JSONTREE_OBJECT(sta_tree,
                 JSONTREE_PAIR("period", &light_callback),
                 JSONTREE_PAIR("rgb", &rgb_tree));
 JSONTREE_OBJECT(PwmTree,
-                JSONTREE_PAIR("light", &sta_tree));
+                JSONTREE_PAIR("light", &sta_tree)); */
 #endif
 
 /******************************************************************************
@@ -399,9 +395,10 @@ JSONTREE_OBJECT(PwmTree,
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-wifi_station_get(struct jsontree_context *js_ctx)
+//wifi_station_get(struct jsontree_context *js_ctx)
+wifi_station_get( )
 {
-    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
     struct ip_info ipconfig;
     uint8 buf[20];
     os_bzero(buf, sizeof(buf));
@@ -422,7 +419,7 @@ wifi_station_get(struct jsontree_context *js_ctx)
         os_sprintf(buf, IPSTR, IP2STR(&ipconfig.gw));
         jsontree_write_string(js_ctx, buf);
     }
-
+ */
     return 0;
 }
 
@@ -434,9 +431,10 @@ wifi_station_get(struct jsontree_context *js_ctx)
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-wifi_station_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
+//wifi_station_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
+wifi_station_set()
 {
-    int type;
+/*     int type;
     uint8 station_tree;
 
     while ((type = jsonparse_next(parser)) != 0) {
@@ -476,10 +474,10 @@ wifi_station_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser
             }
         }
     }
-
+ */
     return 0;
 }
-
+/* 
 LOCAL struct jsontree_callback wifi_station_callback =
     JSONTREE_CALLBACK(wifi_station_get, wifi_station_set);
 
@@ -500,7 +498,7 @@ JSONTREE_OBJECT(get_station_tree,
                 JSONTREE_PAIR("Ipinfo_Station", &ip_tree));
 JSONTREE_OBJECT(set_station_tree,
                 JSONTREE_PAIR("Connect_Station", &set_station_config_tree));
-
+ */
 //JSONTREE_OBJECT(get_wifi_station_info_tree,
 //                JSONTREE_PAIR("Station", &get_station_tree));
 //JSONTREE_OBJECT(set_wifi_station_info_tree,
@@ -513,9 +511,10 @@ JSONTREE_OBJECT(set_station_tree,
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-wifi_softap_get(struct jsontree_context *js_ctx)
+//wifi_softap_get(struct jsontree_context *js_ctx)
+wifi_softap_get()
 {
-    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
     struct ip_info ipconfig;
     uint8 buf[20];
     os_bzero(buf, sizeof(buf));
@@ -564,7 +563,7 @@ wifi_softap_get(struct jsontree_context *js_ctx)
         os_sprintf(buf, IPSTR, IP2STR(&ipconfig.gw));
         jsontree_write_string(js_ctx, buf);
     }
-
+ */
     return 0;
 }
 
@@ -576,9 +575,10 @@ wifi_softap_get(struct jsontree_context *js_ctx)
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-wifi_softap_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
+//wifi_softap_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
+wifi_softap_set()
 {
-    int type;
+/*     int type;
     uint8 softap_tree;
 
     while ((type = jsonparse_next(parser)) != 0) {
@@ -631,11 +631,11 @@ wifi_softap_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
                 }
             }
         }
-    }
+    } */
 
     return 0;
 }
-
+/* 
 LOCAL struct jsontree_callback wifi_softap_callback =
     JSONTREE_CALLBACK(wifi_softap_get, wifi_softap_set);
 
@@ -670,7 +670,7 @@ JSONTREE_OBJECT(wifi_info_tree,
                 JSONTREE_PAIR("wifi", &wifi_response_tree));
 JSONTREE_OBJECT(wifi_req_tree,
                 JSONTREE_PAIR("wifi", &wifi_request_tree));
-
+ */
 
 /******************************************************************************
  * FunctionName : scan_get
@@ -679,9 +679,10 @@ JSONTREE_OBJECT(wifi_req_tree,
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-scan_get(struct jsontree_context *js_ctx)
+//scan_get(struct jsontree_context *js_ctx)
+scan_get()
 {
-    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
     //    STAILQ_HEAD(, bss_info) *pbss = scanarg;
 //    LOCAL struct bss_info *bss;
 
@@ -738,11 +739,11 @@ scan_get(struct jsontree_context *js_ctx)
         bss = STAILQ_NEXT(bss, next);
 //        os_free(bss);
         //}
-    }
+    } */
 
     return 0;
 }
-
+/* 
 LOCAL struct jsontree_callback scan_callback =
     JSONTREE_CALLBACK(scan_get, NULL);
 
@@ -770,7 +771,7 @@ JSONTREE_OBJECT(scanres_tree,
                 JSONTREE_PAIR("Response", &scantree));
 JSONTREE_OBJECT(scan_tree,
                 JSONTREE_PAIR("scan", &scanres_tree));
-
+ */
 /******************************************************************************
  * FunctionName : parse_url
  * Description  : parse the received data from the server
@@ -781,7 +782,7 @@ JSONTREE_OBJECT(scan_tree,
 LOCAL void ICACHE_FLASH_ATTR
 parse_url(char *precv, URL_Frame *purl_frame)
 {
-    char *str = NULL;
+/*     char *str = NULL;
     uint8 length = 0;
     char *pbuffer = NULL;
     char *pbufer = NULL;
@@ -841,7 +842,7 @@ parse_url(char *precv, URL_Frame *purl_frame)
         os_free(pbufer);
     } else {
         return;
-    }
+    } */
 }
 
 LOCAL char *precvbuffer;
@@ -849,7 +850,7 @@ static uint32 dat_sumlength = 0;
 LOCAL bool ICACHE_FLASH_ATTR
 save_data(char *precv, uint16 length)
 {
-    bool flag = false;
+/*     bool flag = false;
     char length_buf[10] = {0};
     char *ptemp = NULL;
     char *pdata = NULL;
@@ -904,13 +905,13 @@ save_data(char *precv, uint16 length)
         return true;
     } else {
         return false;
-    }
+    } */
 }
 
 LOCAL bool ICACHE_FLASH_ATTR
 check_data(char *precv, uint16 length)
 {
-        //bool flag = true;
+/*         //bool flag = true;
     char length_buf[10] = {0};
     char *ptemp = NULL;
     char *pdata = NULL;
@@ -940,13 +941,13 @@ check_data(char *precv, uint16 length)
                 }
             }
         }
-    }
+    } */
     return true;
 }
-
+/* 
 LOCAL os_timer_t *restart_10ms;
 LOCAL rst_parm *rstparm;
-
+ */
 /******************************************************************************
  * FunctionName : restart_10ms_cb
  * Description  : system restart or wifi reconnected after a certain time.
@@ -956,7 +957,7 @@ LOCAL rst_parm *rstparm;
 LOCAL void ICACHE_FLASH_ATTR
 restart_10ms_cb(void *arg)
 {
-    if (rstparm != NULL && rstparm->pespconn != NULL) {
+/*     if (rstparm != NULL && rstparm->pespconn != NULL) {
         switch (rstparm->parmtype) {
             case WIFI:
                 //if (rstparm->pespconn->state == ESPCONN_CLOSE) {
@@ -1005,7 +1006,7 @@ restart_10ms_cb(void *arg)
             default:
                 break;
         }
-    }
+    } */
 }
 
 /******************************************************************************
@@ -1019,7 +1020,7 @@ restart_10ms_cb(void *arg)
 LOCAL void ICACHE_FLASH_ATTR
 data_send(void *arg, bool responseOK, char *psend)
 {
-    uint16 length = 0;
+/*     uint16 length = 0;
     char *pbuf = NULL;
     char httphead[256];
     struct espconn *ptrespconn = arg;
@@ -1064,7 +1065,7 @@ Content-Length: 0\r\nServer: lwIP/1.4.0\r\n\n");
     if (pbuf) {
         os_free(pbuf);
         pbuf = NULL;
-    }
+    } */
 }
 
 /******************************************************************************
@@ -1077,7 +1078,7 @@ Content-Length: 0\r\nServer: lwIP/1.4.0\r\n\n");
 LOCAL void ICACHE_FLASH_ATTR
 json_send(void *arg, ParmType ParmType)
 {
-    char *pbuf = NULL;
+/*     char *pbuf = NULL;
     pbuf = (char *)os_zalloc(jsonSize);
     struct espconn *ptrespconn = arg;
 
@@ -1190,7 +1191,7 @@ json_send(void *arg, ParmType ParmType)
 
     data_send(ptrespconn, true, pbuf);
     os_free(pbuf);
-    pbuf = NULL;
+    pbuf = NULL; */
 }
 
 /******************************************************************************
@@ -1203,9 +1204,9 @@ json_send(void *arg, ParmType ParmType)
 LOCAL void ICACHE_FLASH_ATTR
 response_send(void *arg, bool responseOK)
 {
-    struct espconn *ptrespconn = arg;
+/*     struct espconn *ptrespconn = arg;
 
-    data_send(ptrespconn, responseOK, NULL);
+    data_send(ptrespconn, responseOK, NULL); */
 }
 
 /******************************************************************************
@@ -1217,7 +1218,7 @@ response_send(void *arg, bool responseOK)
 *******************************************************************************/
 LOCAL void ICACHE_FLASH_ATTR json_scan_cb(void *arg, STATUS status)
 {
-    pscaninfo->pbss = arg;
+/*     pscaninfo->pbss = arg;
 
     if (scannum % 8 == 0) {
         pscaninfo->totalpage = scannum / 8;
@@ -1265,127 +1266,18 @@ LOCAL void ICACHE_FLASH_ATTR json_scan_cb(void *arg, STATUS status)
     pbuf = (char *)os_zalloc(jsonSize);
     json_ws_send((struct jsontree_value *)&total_tree, "total", pbuf);
     data_send(pscaninfo->pespconn, true, pbuf);
-    os_free(pbuf);
+    os_free(pbuf); */
 }
-
-void ICACHE_FLASH_ATTR
-upgrade_check_func(void *arg)
+//add by baojun 
+void *zalloc(size_t size)
 {
-	struct espconn *ptrespconn = arg;
-	os_timer_disarm(&upgrade_check_timer);
-	if(system_upgrade_flag_check() == UPGRADE_FLAG_START) {
-		response_send(ptrespconn, false);
-        system_upgrade_deinit();
-        system_upgrade_flag_set(UPGRADE_FLAG_IDLE);
-        upgrade_lock = 0;
-		os_printf("local upgrade failed\n");
-	} else if( system_upgrade_flag_check() == UPGRADE_FLAG_FINISH ) {
-		os_printf("local upgrade success\n");
-		response_send(ptrespconn, true);
-		upgrade_lock = 0;
-	} else {
-
-	}
-
-
-}
-/******************************************************************************
- * FunctionName : upgrade_deinit
- * Description  : disconnect the connection with the host
- * Parameters   : bin -- server number
- * Returns      : none
-*******************************************************************************/
-void ICACHE_FLASH_ATTR
-LOCAL local_upgrade_deinit(void)
-{
-    if (system_upgrade_flag_check() != UPGRADE_FLAG_START) {
-    	os_printf("system upgrade deinit\n");
-        system_upgrade_deinit();
-    }
+	u8 *ptr = NULL;
+	ptr = (u8 *)malloc(size);
+	memset(ptr,0,size);
 }
 
-
-/******************************************************************************
- * FunctionName : upgrade_download
- * Description  : Processing the upgrade data from the host
- * Parameters   : bin -- server number
- *                pusrdata -- The upgrade data (or NULL when the connection has been closed!)
- *                length -- The length of upgrade data
- * Returns      : none
-*******************************************************************************/
-LOCAL void ICACHE_FLASH_ATTR
-local_upgrade_download(void * arg,char *pusrdata, unsigned short length)
-{
-    char *ptr = NULL;
-    char *ptmp2 = NULL;
-    char lengthbuffer[32];
-    static uint32 totallength = 0;
-    static uint32 sumlength = 0;
-    static uint32 erase_length = 0;
-    char A_buf[2] = {0xE9 ,0x03}; char	B_buf[2] = {0xEA,0x04};
-    struct espconn *pespconn = arg;
-    if (totallength == 0 && (ptr = (char *)os_strstr(pusrdata, "\r\n\r\n")) != NULL &&
-            (ptr = (char *)os_strstr(pusrdata, "Content-Length")) != NULL) {
-    	ptr = (char *)os_strstr(pusrdata, "Content-Length: ");
-		if (ptr != NULL) {
-			ptr += 16;
-			ptmp2 = (char *)os_strstr(ptr, "\r\n");
-
-			if (ptmp2 != NULL) {
-				os_memset(lengthbuffer, 0, sizeof(lengthbuffer));
-				os_memcpy(lengthbuffer, ptr, ptmp2 - ptr);
-				sumlength = atoi(lengthbuffer);
-				if (sumlength == 0) {
-					os_timer_disarm(&upgrade_check_timer);
-					os_timer_setfn(&upgrade_check_timer, (os_timer_func_t *)upgrade_check_func, pespconn);
-					os_timer_arm(&upgrade_check_timer, 10, 0);
-					return;
-				}
-			} else {
-				os_printf("sumlength failed\n");
-			}
-		} else {
-			os_printf("Content-Length: failed\n");
-		}
-		if (sumlength != 0) {
-			if (sumlength >= LIMIT_ERASE_SIZE){
-				system_upgrade_erase_flash(0xFFFF);
-				erase_length = sumlength - LIMIT_ERASE_SIZE;
-			} else {
-			system_upgrade_erase_flash(sumlength);
-				erase_length = 0;
-			}
-		}
-        ptr = (char *)os_strstr(pusrdata, "\r\n\r\n");
-        length -= ptr - pusrdata;
-        length -= 4;
-        totallength += length;
-        os_printf("upgrade file download start.\n");
-        system_upgrade(ptr + 4, length);
-
-    } else {
-        totallength += length;
-        if (erase_length >= LIMIT_ERASE_SIZE){
-			system_upgrade_erase_flash(0xFFFF);
-			erase_length -= LIMIT_ERASE_SIZE;
-		} else {
-			system_upgrade_erase_flash(erase_length);
-			erase_length = 0;
-		}
-        system_upgrade(pusrdata, length);
-    }
-
-    if (totallength == sumlength) {
-        os_printf("upgrade file download finished.\n");
-        system_upgrade_flag_set(UPGRADE_FLAG_FINISH);
-        totallength = 0;
-        sumlength = 0;
-        upgrade_check_func(pespconn);
-        os_timer_disarm(&app_upgrade_10s);
-        os_timer_setfn(&app_upgrade_10s, (os_timer_func_t *)local_upgrade_deinit, NULL);
-        os_timer_arm(&app_upgrade_10s, 10, 0);
-    }
-}
+#define os_zalloc(s)      zalloc(s)
+#define os_free(s)      free(s)
 
 /******************************************************************************
  * FunctionName : webserver_recv
@@ -1401,7 +1293,7 @@ webserver_recv(void *arg, char *pusrdata, unsigned short length)
     URL_Frame *pURL_Frame = NULL;
     char *pParseBuffer = NULL;
     bool parse_flag = false;
-    struct espconn *ptrespconn = arg;
+    void *ptrespconn = arg;
 
     if(upgrade_lock == 0){
 
@@ -1434,11 +1326,11 @@ webserver_recv(void *arg, char *pusrdata, unsigned short length)
                     if (os_strcmp(pURL_Frame->pFilename, "status") == 0) {
                         json_send(ptrespconn, CONNECT_STATUS);
                     } else if (os_strcmp(pURL_Frame->pFilename, "scan") == 0) {
-                        char *strstr = NULL;
-                        strstr = (char *)os_strstr(pusrdata, "&");
+                        char *tmp_str = NULL;
+                        tmp_str = (char *)os_strstr(pusrdata, "&");
 
-                        if (strstr == NULL) {
-                            if (pscaninfo == NULL) {
+                        if (tmp_str == NULL) {
+/*                             if (pscaninfo == NULL) {
                                 pscaninfo = (scaninfo *)os_zalloc(sizeof(scaninfo));
                             }
 
@@ -1446,13 +1338,13 @@ webserver_recv(void *arg, char *pusrdata, unsigned short length)
                             pscaninfo->pagenum = 0;
                             pscaninfo->page_sn = 0;
                             pscaninfo->data_cnt = 0;
-                            wifi_station_scan(NULL, json_scan_cb);
-                        } else {
-                            strstr ++;
+                            //wifi_station_scan(NULL, json_scan_cb);
+ */                        } else {
+                            tmp_str ++;
 
-                            if (os_strncmp(strstr, "page", 4) == 0) {
-                                if (pscaninfo != NULL) {
-                                    pscaninfo->pagenum = *(strstr + 5);
+                            if (os_strncmp(tmp_str, "page", 4) == 0) {
+/*                                 if (pscaninfo != NULL) {
+                                    pscaninfo->pagenum = *(tmp_str + 5);
                                     pscaninfo->pagenum -= 0x30;
 
                                     if (pscaninfo->pagenum > pscaninfo->totalpage || pscaninfo->pagenum == 0) {
@@ -1463,8 +1355,8 @@ webserver_recv(void *arg, char *pusrdata, unsigned short length)
                                 } else {
                                     response_send(ptrespconn, false);
                                 }
-                            } else if(os_strncmp(strstr, "finish", 6) == 0){
-                            	bss_temp = bss_head;
+ */                            } else if(os_strncmp(tmp_str, "finish", 6) == 0){
+/*                             	bss_temp = bss_head;
                             	while(bss_temp != NULL) {
                             		bss_head = bss_temp->next.stqe_next;
                             		os_free(bss_temp);
@@ -1473,7 +1365,7 @@ webserver_recv(void *arg, char *pusrdata, unsigned short length)
                             	bss_head = NULL;
                             	bss_temp = NULL;
                             	response_send(ptrespconn, true);
-                            } else {
+ */                            } else {
                                 response_send(ptrespconn, false);
                             }
                         }
@@ -1482,8 +1374,8 @@ webserver_recv(void *arg, char *pusrdata, unsigned short length)
                     }
                 } else if (os_strcmp(pURL_Frame->pSelect, "config") == 0 &&
                            os_strcmp(pURL_Frame->pCommand, "command") == 0) {
-                    if (os_strcmp(pURL_Frame->pFilename, "wifi") == 0) {
-                        ap_conf = (struct softap_config *)os_zalloc(sizeof(struct softap_config));
+/*                    if (os_strcmp(pURL_Frame->pFilename, "wifi") == 0) {
+                         ap_conf = (struct softap_config *)os_zalloc(sizeof(struct softap_config));
                         sta_conf = (struct station_config *)os_zalloc(sizeof(struct station_config));
                         json_send(ptrespconn, WIFI);
                         os_free(sta_conf);
@@ -1511,187 +1403,15 @@ webserver_recv(void *arg, char *pusrdata, unsigned short length)
                         json_send(ptrespconn, REBOOT);
                     } else {
                         response_send(ptrespconn, false);
-                    }
-                } else if (os_strcmp(pURL_Frame->pSelect, "upgrade") == 0 &&
-    					os_strcmp(pURL_Frame->pCommand, "command") == 0) {
-    					if (os_strcmp(pURL_Frame->pFilename, "getuser") == 0) {
-    						json_send(ptrespconn , USER_BIN);
-    					}
-    			} else {
+                    } */
+                }else {
                     response_send(ptrespconn, false);
                 }
 
                 break;
 
             case POST:
-                os_printf("We have a POST request.\n");
-                pParseBuffer = (char *)os_strstr(precvbuffer, "\r\n\r\n");
-
-                if (pParseBuffer == NULL) {
-                    break;
-                }
-
-                pParseBuffer += 4;
-
-                if (os_strcmp(pURL_Frame->pSelect, "config") == 0 &&
-                        os_strcmp(pURL_Frame->pCommand, "command") == 0) {
-#if SENSOR_DEVICE
-
-                    if (os_strcmp(pURL_Frame->pFilename, "sleep") == 0) {
-#else
-
-                    if (os_strcmp(pURL_Frame->pFilename, "reboot") == 0) {
-#endif
-
-                        if (pParseBuffer != NULL) {
-                            if (restart_10ms != NULL) {
-                                os_timer_disarm(restart_10ms);
-                            }
-
-                            if (rstparm == NULL) {
-                                rstparm = (rst_parm *)os_zalloc(sizeof(rst_parm));
-                            }
-
-                            rstparm->pespconn = ptrespconn;
-#if SENSOR_DEVICE
-                            rstparm->parmtype = DEEP_SLEEP;
-#else
-                            rstparm->parmtype = REBOOT;
-#endif
-
-                            if (restart_10ms == NULL) {
-                                restart_10ms = (os_timer_t *)os_malloc(sizeof(os_timer_t));
-                            }
-
-                            os_timer_setfn(restart_10ms, (os_timer_func_t *)restart_10ms_cb, NULL);
-                            os_timer_arm(restart_10ms, 10, 0);  // delay 10ms, then do
-
-                            response_send(ptrespconn, true);
-                        } else {
-                            response_send(ptrespconn, false);
-                        }
-                    } else if (os_strcmp(pURL_Frame->pFilename, "wifi") == 0) {
-                        if (pParseBuffer != NULL) {
-                            struct jsontree_context js;
-                            user_esp_platform_set_connect_status(DEVICE_CONNECTING);
-
-                            if (restart_10ms != NULL) {
-                                os_timer_disarm(restart_10ms);
-                            }
-
-                            if (ap_conf == NULL) {
-                                ap_conf = (struct softap_config *)os_zalloc(sizeof(struct softap_config));
-                            }
-
-                            if (sta_conf == NULL) {
-                                sta_conf = (struct station_config *)os_zalloc(sizeof(struct station_config));
-                            }
-
-                            jsontree_setup(&js, (struct jsontree_value *)&wifi_req_tree, json_putchar);
-                            json_parse(&js, pParseBuffer);
-
-                            if (rstparm == NULL) {
-                                rstparm = (rst_parm *)os_zalloc(sizeof(rst_parm));
-                            }
-
-                            rstparm->pespconn = ptrespconn;
-                            rstparm->parmtype = WIFI;
-
-                            if (sta_conf->ssid[0] != 0x00 || ap_conf->ssid[0] != 0x00) {
-                                ap_conf->ssid_hidden = 0;
-                                ap_conf->max_connection = 4;
-
-                                if (restart_10ms == NULL) {
-                                    restart_10ms = (os_timer_t *)os_malloc(sizeof(os_timer_t));
-                                }
-
-                                os_timer_disarm(restart_10ms);
-                                os_timer_setfn(restart_10ms, (os_timer_func_t *)restart_10ms_cb, NULL);
-                                os_timer_arm(restart_10ms, 10, 0);  // delay 10ms, then do
-                            } else {
-                                os_free(ap_conf);
-                                os_free(sta_conf);
-                                os_free(rstparm);
-                                sta_conf = NULL;
-                                ap_conf = NULL;
-                                rstparm =NULL;
-                            }
-
-                            response_send(ptrespconn, true);
-                        } else {
-                            response_send(ptrespconn, false);
-                        }
-                    }
-
-#if PLUG_DEVICE
-                    else if (os_strcmp(pURL_Frame->pFilename, "switch") == 0) {
-                        if (pParseBuffer != NULL) {
-                            struct jsontree_context js;
-                            jsontree_setup(&js, (struct jsontree_value *)&StatusTree, json_putchar);
-                            json_parse(&js, pParseBuffer);
-                            response_send(ptrespconn, true);
-                        } else {
-                            response_send(ptrespconn, false);
-                        }
-                    }
-
-#endif
-
-#if LIGHT_DEVICE
-                    else if (os_strcmp(pURL_Frame->pFilename, "light") == 0) {
-                        if (pParseBuffer != NULL) {
-                            struct jsontree_context js;
-
-                            jsontree_setup(&js, (struct jsontree_value *)&PwmTree, json_putchar);
-                            json_parse(&js, pParseBuffer);
-
-                            os_printf("rsp1:%u\n",PostCmdNeeRsp);
-                            if(PostCmdNeeRsp == 0)
-                                PostCmdNeeRsp = 1;
-                            else
-                                response_send(ptrespconn, true);
-                        } else {
-                            response_send(ptrespconn, false);
-                        }
-                    }
-                    else if (os_strcmp(pURL_Frame->pFilename, "reset") == 0) {
-                            response_send(ptrespconn, true);
-                            extern  struct esp_platform_saved_param esp_param;
-                            esp_param.activeflag = 0;
-                            system_param_save_with_protect(ESP_PARAM_START_SEC, &esp_param, sizeof(esp_param));
-                            
-                            system_restore();
-                            system_restart();
-                    }
-
-#endif
-                    else {
-                        response_send(ptrespconn, false);
-                    }
-                }
-				else if(os_strcmp(pURL_Frame->pSelect, "upgrade") == 0 &&
-					    os_strcmp(pURL_Frame->pCommand, "command") == 0){
-					if (os_strcmp(pURL_Frame->pFilename, "start") == 0){
-						response_send(ptrespconn, true);
-						os_printf("local upgrade start\n");
-						upgrade_lock = 1;
-						system_upgrade_init();
-						system_upgrade_flag_set(UPGRADE_FLAG_START);
-						os_timer_disarm(&upgrade_check_timer);
-						os_timer_setfn(&upgrade_check_timer, (os_timer_func_t *)upgrade_check_func, NULL);
-						os_timer_arm(&upgrade_check_timer, 120000, 0);
-					} else if (os_strcmp(pURL_Frame->pFilename, "reset") == 0) {
-
-						response_send(ptrespconn, true);
-						os_printf("local upgrade restart\n");
-						system_upgrade_reboot();
-					} else {
-						response_send(ptrespconn, false);
-					}
-				}else {
-					response_send(ptrespconn, false);
-                }
-                 break;
+                break;
         }
 
         if (precvbuffer != NULL){
@@ -1703,88 +1423,5 @@ webserver_recv(void *arg, char *pusrdata, unsigned short length)
         _temp_exit:
             ;
     }
-    else if(upgrade_lock == 1){
-    	local_upgrade_download(ptrespconn,pusrdata, length);
-		if (precvbuffer != NULL){
-			os_free(precvbuffer);
-			precvbuffer = NULL;
-		}
-		os_free(pURL_Frame);
-		pURL_Frame = NULL;
-    }
-}
 
-/******************************************************************************
- * FunctionName : webserver_recon
- * Description  : the connection has been err, reconnection
- * Parameters   : arg -- Additional argument to pass to the callback function
- * Returns      : none
-*******************************************************************************/
-LOCAL ICACHE_FLASH_ATTR
-void webserver_recon(void *arg, sint8 err)
-{
-    struct espconn *pesp_conn = arg;
-
-    os_printf("webserver's %d.%d.%d.%d:%d err %d reconnect\n", pesp_conn->proto.tcp->remote_ip[0],
-    		pesp_conn->proto.tcp->remote_ip[1],pesp_conn->proto.tcp->remote_ip[2],
-    		pesp_conn->proto.tcp->remote_ip[3],pesp_conn->proto.tcp->remote_port, err);
-}
-
-/******************************************************************************
- * FunctionName : webserver_recon
- * Description  : the connection has been err, reconnection
- * Parameters   : arg -- Additional argument to pass to the callback function
- * Returns      : none
-*******************************************************************************/
-LOCAL ICACHE_FLASH_ATTR
-void webserver_discon(void *arg)
-{
-    struct espconn *pesp_conn = arg;
-
-    os_printf("webserver's %d.%d.%d.%d:%d disconnect\n", pesp_conn->proto.tcp->remote_ip[0],
-        		pesp_conn->proto.tcp->remote_ip[1],pesp_conn->proto.tcp->remote_ip[2],
-        		pesp_conn->proto.tcp->remote_ip[3],pesp_conn->proto.tcp->remote_port);
-}
-
-/******************************************************************************
- * FunctionName : user_accept_listen
- * Description  : server listened a connection successfully
- * Parameters   : arg -- Additional argument to pass to the callback function
- * Returns      : none
-*******************************************************************************/
-LOCAL void ICACHE_FLASH_ATTR
-webserver_listen(void *arg)
-{
-    struct espconn *pesp_conn = arg;
-
-    espconn_regist_recvcb(pesp_conn, webserver_recv);
-    espconn_regist_reconcb(pesp_conn, webserver_recon);
-    espconn_regist_disconcb(pesp_conn, webserver_discon);
-}
-
-/******************************************************************************
- * FunctionName : user_webserver_init
- * Description  : parameter initialize as a server
- * Parameters   : port -- server port
- * Returns      : none
-*******************************************************************************/
-void ICACHE_FLASH_ATTR
-user_webserver_init(uint32 port)
-{
-    LOCAL struct espconn esp_conn;
-    LOCAL esp_tcp esptcp;
-
-    esp_conn.type = ESPCONN_TCP;
-    esp_conn.state = ESPCONN_NONE;
-    esp_conn.proto.tcp = &esptcp;
-    esp_conn.proto.tcp->local_port = port;
-    espconn_regist_connectcb(&esp_conn, webserver_listen);
-
-#ifdef SERVER_SSL_ENABLE
-    espconn_secure_set_default_certificate(default_certificate, default_certificate_len);
-    espconn_secure_set_default_private_key(default_private_key, default_private_key_len);
-    espconn_secure_accept(&esp_conn);
-#else
-    espconn_accept(&esp_conn);
-#endif
 }

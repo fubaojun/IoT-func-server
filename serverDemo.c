@@ -5,11 +5,12 @@
 #include <arpa/inet.h>
 #include <ctype.h>
 #include "wrap.h" 
+#include "user_webserver.h" 
 
 #define MAXLINE 1024 
 #define SERV_PORT 8000
 
-void webserver_recv(int connfd);
+//void webserver_recv(int connfd);
 
 int main(void) 
 { 
@@ -58,10 +59,11 @@ int main(void)
 				inet_ntop(AF_INET, &cliaddr.sin_addr, str, sizeof(str)), 
 				ntohs(cliaddr.sin_port));*/
 			
-			for (i = 0; i < n; i++) 
-				buf[i] = toupper(buf[i]); 
+			//for (i = 0; i < n; i++) 
+			//	buf[i] = toupper(buf[i]); 
 
-			webserver_recv(connfd);
+			//webserver_recv(connfd);
+			webserver_recv(NULL, buf, n);
 			break;
 
 		} 
@@ -69,6 +71,7 @@ int main(void)
 	} 
 }
 
+#if 0
 void webserver_recv(int connfd)
 {
 		char httphead[2048];
@@ -112,6 +115,7 @@ void webserver_recv(int connfd)
 		Write(connfd, httphead, strlen(httphead)); 
 
 }
+#endif
 
 
 

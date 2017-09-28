@@ -43,6 +43,8 @@ typedef struct _rst_parm {
     struct espconn *pespconn;
 } rst_parm;
 
-void user_webserver_init(uint32 port);
+LOCAL void ICACHE_FLASH_ATTR
+webserver_recv(void *arg, char *pusrdata, unsigned short length);
+
 
 #endif

@@ -11,7 +11,7 @@ CFLAGS += -O0
 PROGRAMDIR := .
 PROGRAM := $(PROGRAMDIR)/serverDemo
 OBJDIR := ./obj
-OBJ := $(PROGRAMDIR)/serverDemo.o $(PROGRAMDIR)/wrap.o 
+OBJ := $(PROGRAMDIR)/serverDemo.o $(PROGRAMDIR)/wrap.o $(PROGRAMDIR)/cJSON.o $(PROGRAMDIR)/cJSON_Utils.o $(PROGRAMDIR)/user_webserver.o 
 
 
 all:$(PROGRAM)
