@@ -1,8 +1,7 @@
 #ifndef __USER_WEBSERVER_H__
 #define __USER_WEBSERVER_H__
 
-#define LOCAL  
-#define ICACHE_FLASH_ATTR  
+#include "c_types.h"
 
 #define SERVER_PORT 80
 #define SERVER_SSL_PORT 443

@@ -36,5 +36,12 @@
 
 #define os_printf	printf
 
+#define os_malloc      malloc
+#define os_zalloc      zalloc
+#define os_free      free
+#define espconn_sent      Write
+
+void *zalloc(size_t size);
+
 #endif
 

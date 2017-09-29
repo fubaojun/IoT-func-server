@@ -36,6 +36,7 @@ int main(void)
 	while (1) 
 	{ 
 		cliaddr_len = sizeof(cliaddr); 
+		printf("wait connections ...-times %d--\n", i++); 
 		connfd = Accept(listenfd,(struct sockaddr *)&cliaddr, &cliaddr_len); 
 		
 		while (1) 

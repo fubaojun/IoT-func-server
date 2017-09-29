@@ -6,12 +6,12 @@ else
 CC = gcc
 endif
 #CFLAGS += -O2 -static
-CFLAGS += -O0
+CFLAGS += -O0 -I . 
 
 PROGRAMDIR := .
 PROGRAM := $(PROGRAMDIR)/serverDemo
 OBJDIR := ./obj
-OBJ := $(PROGRAMDIR)/serverDemo.o $(PROGRAMDIR)/wrap.o $(PROGRAMDIR)/cJSON.o $(PROGRAMDIR)/cJSON_Utils.o $(PROGRAMDIR)/user_webserver.o 
+OBJ := $(PROGRAMDIR)/serverDemo.o $(PROGRAMDIR)/wrap.o $(PROGRAMDIR)/cJSON.o $(PROGRAMDIR)/cJSON_Utils.o $(PROGRAMDIR)/user_webserver.o $(PROGRAMDIR)/user_json.o 
 
 
 all:$(PROGRAM)

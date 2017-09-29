@@ -14,7 +14,7 @@
 #include "osapi.h"
 #include "wrap.h" 
 
-
+#include "user_json.h"
 
 #include "cJSON.h"
 #include "cJSON_Utils.h"
@@ -50,10 +50,6 @@ void *zalloc(size_t size)
 	return (void *)ptr;
 }
 
-#define os_zalloc      zalloc
-#define os_free      free
-#define espconn_sent      Write
-
 /******************************************************************************
  * FunctionName : device_get
  * Description  : set up the device information parmer as a JSON format
@@ -87,8 +83,8 @@ device_get( )
     return 0;
 }
 
-/* LOCAL struct jsontree_callback device_callback =
-    JSONTREE_CALLBACK(device_get, NULL); */
+LOCAL struct jsontree_callback device_callback =
+    JSONTREE_CALLBACK(device_get, NULL);
 /******************************************************************************
  * FunctionName : userbin_get
  * Description  : get up the user bin paramer as a JSON format
@@ -119,13 +115,13 @@ userbin_get( )
     return 0;
 }
 
-/* LOCAL struct jsontree_callback userbin_callback =
+LOCAL struct jsontree_callback userbin_callback =
     JSONTREE_CALLBACK(userbin_get, NULL);
 
 JSONTREE_OBJECT(userbin_tree,
                 JSONTREE_PAIR("status", &userbin_callback),
                 JSONTREE_PAIR("user_bin", &userbin_callback));
-JSONTREE_OBJECT(userinfo_tree,JSONTREE_PAIR("user_info",&userbin_tree)); */
+JSONTREE_OBJECT(userinfo_tree,JSONTREE_PAIR("user_info",&userbin_tree));
 /******************************************************************************
  * FunctionName : version_get
  * Description  : set up the device version paramer as a JSON format
@@ -157,7 +153,7 @@ version_get( )
     return 0;
 }
 
-/* LOCAL struct jsontree_callback version_callback =
+LOCAL struct jsontree_callback version_callback =
     JSONTREE_CALLBACK(version_get, NULL);
 
 JSONTREE_OBJECT(device_tree,
@@ -173,7 +169,7 @@ JSONTREE_OBJECT(info_tree,
                 JSONTREE_PAIR("Device", &device_tree));
 
 JSONTREE_OBJECT(INFOTree,
-                JSONTREE_PAIR("info", &info_tree)); */
+                JSONTREE_PAIR("info", &info_tree));
 
 LOCAL int ICACHE_FLASH_ATTR
 //connect_status_get(struct jsontree_context *js_ctx)
@@ -188,7 +184,7 @@ connect_status_get( )
     return 0;
 }
 
-/* LOCAL struct jsontree_callback connect_status_callback =
+LOCAL struct jsontree_callback connect_status_callback =
     JSONTREE_CALLBACK(connect_status_get, NULL);
 
 JSONTREE_OBJECT(status_sub_tree,
@@ -198,7 +194,7 @@ JSONTREE_OBJECT(connect_status_tree,
                 JSONTREE_PAIR("Status", &status_sub_tree));
 
 JSONTREE_OBJECT(con_status_tree,
-                JSONTREE_PAIR("info", &connect_status_tree)); */
+                JSONTREE_PAIR("info", &connect_status_tree));
 
 #if PLUG_DEVICE
 /******************************************************************************
@@ -1116,88 +1112,18 @@ json_send(int arg, ParmType ParmType)
             break;
 
         case WIFI:
-            json_ws_send((struct jsontree_value *)&wifi_info_tree, "wifi", pbuf);
+            //json_ws_send((struct jsontree_value *)&wifi_info_tree, "wifi", pbuf);
             break;
 
         case CONNECT_STATUS:
-            json_ws_send((struct jsontree_value *)&con_status_tree, "info", pbuf);
+            //json_ws_send((struct jsontree_value *)&con_status_tree, "info", pbuf);
             break;
 
         case USER_BIN:
-        	json_ws_send((struct jsontree_value *)&userinfo_tree, "user_info", pbuf);
+        	//json_ws_send((struct jsontree_value *)&userinfo_tree, "user_info", pbuf);
         	break;
-        case SCAN: {
-            u8 i = 0;
-            u8 scancount = 0;
-            struct bss_info *bss = NULL;
-//            bss = STAILQ_FIRST(pscaninfo->pbss);
-            bss = bss_head;
-            if (bss == NULL) {
-                os_free(pscaninfo);
-                pscaninfo = NULL;
-                os_sprintf(pbuf, "{\n\"successful\": false,\n\"data\": null\n}");
-            } else {
-                do {
-                    if (pscaninfo->page_sn == pscaninfo->pagenum) {
-                        pscaninfo->page_sn = 0;
-                        os_sprintf(pbuf, "{\n\"successful\": false,\n\"meessage\": \"repeated page\"\n}");
-                        break;
-                    }
-
-                    scancount = scannum - (pscaninfo->pagenum - 1) * 8;
-
-                    if (scancount >= 8) {
-                        pscaninfo->data_cnt += 8;
-                        pscaninfo->page_sn = pscaninfo->pagenum;
-
-                        if (pscaninfo->data_cnt > scannum) {
-                            pscaninfo->data_cnt -= 8;
-                            os_sprintf(pbuf, "{\n\"successful\": false,\n\"meessage\": \"error page\"\n}");
-                            break;
-                        }
-
-                        json_ws_send((struct jsontree_value *)&scan_tree, "scan", pbuf);
-                    } else {
-                        pscaninfo->data_cnt += scancount;
-                        pscaninfo->page_sn = pscaninfo->pagenum;
-
-                        if (pscaninfo->data_cnt > scannum) {
-                            pscaninfo->data_cnt -= scancount;
-                            os_sprintf(pbuf, "{\n\"successful\": false,\n\"meessage\": \"error page\"\n}");
-                            break;
-                        }
-
-                        char *ptrscanbuf = (char *)os_zalloc(jsonSize);
-                        char *pscanbuf = ptrscanbuf;
-                        os_sprintf(pscanbuf, ",\n\"ScanResult\": [\n");
-                        pscanbuf += os_strlen(pscanbuf);
-
-                        for (i = 0; i < scancount; i ++) {
-                            JSONTREE_OBJECT(page_tree,
-                                            JSONTREE_PAIR("page", &scaninfo_tree));
-                            json_ws_send((struct jsontree_value *)&page_tree, "page", pscanbuf);
-                            os_sprintf(pscanbuf + os_strlen(pscanbuf), ",\n");
-                            pscanbuf += os_strlen(pscanbuf);
-                        }
-
-                        os_sprintf(pscanbuf - 2, "]\n");
-                        JSONTREE_OBJECT(scantree,
-                                        JSONTREE_PAIR("TotalPage", &scan_callback),
-                                        JSONTREE_PAIR("PageNum", &scan_callback));
-                        JSONTREE_OBJECT(scanres_tree,
-                                        JSONTREE_PAIR("Response", &scantree));
-                        JSONTREE_OBJECT(scan_tree,
-                                        JSONTREE_PAIR("scan", &scanres_tree));
-                        json_ws_send((struct jsontree_value *)&scan_tree, "scan", pbuf);
-                        os_memcpy(pbuf + os_strlen(pbuf) - 4, ptrscanbuf, os_strlen(ptrscanbuf));
-                        os_sprintf(pbuf + os_strlen(pbuf), "}\n}");
-                        os_free(ptrscanbuf);
-                    }
-                } while (0);
-            }
-
+        case SCAN: 
             break;
-        }
 
         default :
             break;
@@ -1313,19 +1239,23 @@ webserver_recv(int arg, char *pusrdata, unsigned short length)
         	response_send(ptrespconn, false);
         }
 
+            os_printf("==========\r\n");
         os_printf("%s", precvbuffer);
         pURL_Frame = (URL_Frame *)os_zalloc(sizeof(URL_Frame));
         parse_url(precvbuffer, pURL_Frame);
 
         switch (pURL_Frame->Type) {
             case GET:
-                os_printf("We have a GET request.\n");
+                os_printf("\n\nWe have a GET request.\n");
+                response_send(ptrespconn, false);//for test 
 
                 if (os_strcmp(pURL_Frame->pSelect, "client") == 0 &&
                         os_strcmp(pURL_Frame->pCommand, "command") == 0) {
                     if (os_strcmp(pURL_Frame->pFilename, "info") == 0) {
+                //os_printf("\n\nWe have a GET request INFOMATION .\n");
                         json_send(ptrespconn, INFOMATION);
                     }
+                //os_printf("\n\n-------11-------.\n");
 
                     if (os_strcmp(pURL_Frame->pFilename, "status") == 0) {
                         json_send(ptrespconn, CONNECT_STATUS);
@@ -1374,6 +1304,7 @@ webserver_recv(int arg, char *pusrdata, unsigned short length)
                             }
                         }
                     } else {
+                //os_printf("\n\n-------22-------.\n");
                         response_send(ptrespconn, false);
                     }
                 } else if (os_strcmp(pURL_Frame->pSelect, "config") == 0 &&
@@ -1427,5 +1358,6 @@ webserver_recv(int arg, char *pusrdata, unsigned short length)
         _temp_exit:
             ;
     }
+                os_printf("\n\n--webserver_recv---exit---.\n");
 
 }

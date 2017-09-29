@@ -49,6 +49,9 @@ typedef double              real64;
 #define __packed        __attribute__((packed))
 
 //#define LOCAL       static
+#define LOCAL  
+#define ICACHE_FLASH_ATTR  
+
 
 #ifndef NULL
 #define NULL (void *)0
