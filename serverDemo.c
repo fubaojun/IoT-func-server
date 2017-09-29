@@ -63,7 +63,7 @@ int main(void)
 			//	buf[i] = toupper(buf[i]); 
 
 			//webserver_recv(connfd);
-			webserver_recv(NULL, buf, n);
+			webserver_recv(connfd, buf, n);
 			break;
 
 		} 

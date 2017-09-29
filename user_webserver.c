@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include "c_types.h"
 #include "osapi.h"
+#include "wrap.h" 
 
 
 
@@ -39,6 +40,19 @@ LOCAL uint32 PostCmdNeeRsp = 1;
 uint8 upgrade_lock = 0;
 /* LOCAL os_timer_t app_upgrade_10s;
 LOCAL os_timer_t upgrade_check_timer; */
+
+//add by baojun 
+void *zalloc(size_t size)
+{
+	u8 *ptr = NULL;
+	ptr = (u8 *)malloc(size);
+	memset(ptr,0,size);
+	return (void *)ptr;
+}
+
+#define os_zalloc      zalloc
+#define os_free      free
+#define espconn_sent      Write
 
 /******************************************************************************
  * FunctionName : device_get
@@ -782,7 +796,7 @@ JSONTREE_OBJECT(scan_tree,
 LOCAL void ICACHE_FLASH_ATTR
 parse_url(char *precv, URL_Frame *purl_frame)
 {
-/*     char *str = NULL;
+    char *str = NULL;
     uint8 length = 0;
     char *pbuffer = NULL;
     char *pbufer = NULL;
@@ -842,7 +856,7 @@ parse_url(char *precv, URL_Frame *purl_frame)
         os_free(pbufer);
     } else {
         return;
-    } */
+    }
 }
 
 LOCAL char *precvbuffer;
@@ -850,7 +864,7 @@ static uint32 dat_sumlength = 0;
 LOCAL bool ICACHE_FLASH_ATTR
 save_data(char *precv, uint16 length)
 {
-/*     bool flag = false;
+    bool flag = false;
     char length_buf[10] = {0};
     char *ptemp = NULL;
     char *pdata = NULL;
@@ -905,13 +919,13 @@ save_data(char *precv, uint16 length)
         return true;
     } else {
         return false;
-    } */
+    }
 }
 
 LOCAL bool ICACHE_FLASH_ATTR
 check_data(char *precv, uint16 length)
 {
-/*         //bool flag = true;
+        //bool flag = true;
     char length_buf[10] = {0};
     char *ptemp = NULL;
     char *pdata = NULL;
@@ -941,7 +955,7 @@ check_data(char *precv, uint16 length)
                 }
             }
         }
-    } */
+    }
     return true;
 }
 /* 
@@ -1018,18 +1032,18 @@ restart_10ms_cb(void *arg)
  * Returns      :
 *******************************************************************************/
 LOCAL void ICACHE_FLASH_ATTR
-data_send(void *arg, bool responseOK, char *psend)
+data_send(int arg, bool responseOK, char *psend)
 {
-/*     uint16 length = 0;
+    uint16 length = 0;
     char *pbuf = NULL;
     char httphead[256];
-    struct espconn *ptrespconn = arg;
+    int ptrespconn = arg;
     os_memset(httphead, 0, 256);
 
     if (responseOK) {
         os_sprintf(httphead,
                    "HTTP/1.0 200 OK\r\nContent-Length: %d\r\nServer: lwIP/1.4.0\r\n",
-                   psend ? os_strlen(psend) : 0);
+                   (unsigned int)(psend ? os_strlen(psend) : 0));
 
         if (psend) {
             os_sprintf(httphead + os_strlen(httphead),
@@ -1065,7 +1079,7 @@ Content-Length: 0\r\nServer: lwIP/1.4.0\r\n\n");
     if (pbuf) {
         os_free(pbuf);
         pbuf = NULL;
-    } */
+    }
 }
 
 /******************************************************************************
@@ -1076,11 +1090,11 @@ Content-Length: 0\r\nServer: lwIP/1.4.0\r\n\n");
  * Returns      : none
 *******************************************************************************/
 LOCAL void ICACHE_FLASH_ATTR
-json_send(void *arg, ParmType ParmType)
+json_send(int arg, ParmType ParmType)
 {
-/*     char *pbuf = NULL;
+    char *pbuf = NULL;
     pbuf = (char *)os_zalloc(jsonSize);
-    struct espconn *ptrespconn = arg;
+    int ptrespconn = arg;
 
     switch (ParmType) {
 #if LIGHT_DEVICE
@@ -1191,7 +1205,7 @@ json_send(void *arg, ParmType ParmType)
 
     data_send(ptrespconn, true, pbuf);
     os_free(pbuf);
-    pbuf = NULL; */
+    pbuf = NULL;
 }
 
 /******************************************************************************
@@ -1202,11 +1216,11 @@ json_send(void *arg, ParmType ParmType)
  * Returns      : none
 *******************************************************************************/
 LOCAL void ICACHE_FLASH_ATTR
-response_send(void *arg, bool responseOK)
+response_send(int arg, bool responseOK)
 {
-/*     struct espconn *ptrespconn = arg;
+    int ptrespconn = arg;
 
-    data_send(ptrespconn, responseOK, NULL); */
+    data_send(ptrespconn, responseOK, NULL);
 }
 
 /******************************************************************************
@@ -1268,16 +1282,6 @@ LOCAL void ICACHE_FLASH_ATTR json_scan_cb(void *arg, STATUS status)
     data_send(pscaninfo->pespconn, true, pbuf);
     os_free(pbuf); */
 }
-//add by baojun 
-void *zalloc(size_t size)
-{
-	u8 *ptr = NULL;
-	ptr = (u8 *)malloc(size);
-	memset(ptr,0,size);
-}
-
-#define os_zalloc(s)      zalloc(s)
-#define os_free(s)      free(s)
 
 /******************************************************************************
  * FunctionName : webserver_recv
@@ -1288,12 +1292,12 @@ void *zalloc(size_t size)
  * Returns      : none
 *******************************************************************************/
 LOCAL void ICACHE_FLASH_ATTR
-webserver_recv(void *arg, char *pusrdata, unsigned short length)
+webserver_recv(int arg, char *pusrdata, unsigned short length)
 {
     URL_Frame *pURL_Frame = NULL;
     char *pParseBuffer = NULL;
     bool parse_flag = false;
-    void *ptrespconn = arg;
+    int ptrespconn = arg;
 
     if(upgrade_lock == 0){
 
@@ -1309,7 +1313,7 @@ webserver_recv(void *arg, char *pusrdata, unsigned short length)
         	response_send(ptrespconn, false);
         }
 
-//        os_printf(precvbuffer);
+        os_printf("%s", precvbuffer);
         pURL_Frame = (URL_Frame *)os_zalloc(sizeof(URL_Frame));
         parse_url(precvbuffer, pURL_Frame);
 

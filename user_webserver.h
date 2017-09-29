@@ -44,7 +44,7 @@ typedef struct _rst_parm {
 } rst_parm;
 
 LOCAL void ICACHE_FLASH_ATTR
-webserver_recv(void *arg, char *pusrdata, unsigned short length);
+webserver_recv(int arg, char *pusrdata, unsigned short length);
 
 
 #endif
