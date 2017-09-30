@@ -120,12 +120,12 @@ json_ws_send(struct jsontree_value *tree, const char *path, char *pbuf)
     size = jsonSize;
 
     json.values[0] = (struct jsontree_value *)tree;
-    //jsontree_reset(&json);
+    jsontree_reset(&json);
     find_json_path(&json, path);
     json.path = json.depth;
     json.putchar = json_putchar;
 
-    //while (jsontree_print_next(&json) && json.path <= json.depth);
+    while (jsontree_print_next(&json) && json.path <= json.depth);
 
     json_buf[pos] = 0;
     os_memcpy(pbuf, json_buf, pos);
@@ -147,7 +147,7 @@ json_parse(struct jsontree_context *json, char *ptrJSONMessage)
     struct jsontree_callback *c;
     struct jsontree_callback *c_bak = NULL;
 
-    /* while ((v = jsontree_find_next(json, JSON_TYPE_CALLBACK)) != NULL) {
+    while ((v = jsontree_find_next(json, JSON_TYPE_CALLBACK)) != NULL) {
         c = (struct jsontree_callback *)v;
 
         if (c == c_bak) {
@@ -162,5 +162,5 @@ json_parse(struct jsontree_context *json, char *ptrJSONMessage)
             jsonparse_setup(&js, ptrJSONMessage, os_strlen(ptrJSONMessage));
             c->set(json, &js);
         }
-    } */
+    }
 }

@@ -36,7 +36,8 @@
  *         Niclas Finne <nfi@sics.se>
  *         Joakim Eriksson <joakime@sics.se>
  */
-#ifdef JSON_FORMAT
+//#ifdef JSON_FORMAT
+#if 1
 //#include "contiki.h"
 #include "json/jsontree.h"
 #include "json/jsonparse.h"

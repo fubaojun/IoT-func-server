@@ -52,6 +52,16 @@ typedef double              real64;
 #define LOCAL  
 #define ICACHE_FLASH_ATTR  
 
+#define IOT_VERSION_MAJOR		1U
+#define IOT_VERSION_MINOR		0U
+#define IOT_VERSION_REVISION	5U
+
+#define VERSION_NUM   (IOT_VERSION_MAJOR * 1000 + IOT_VERSION_MINOR * 100 + IOT_VERSION_REVISION)
+
+//#define VERSION_TYPE      "b"
+#define VERSION_TYPE   	  "v"
+#define UPGRADE_FALG	"n"
+#define device_type       45772
 
 #ifndef NULL
 #define NULL (void *)0

@@ -57,10 +57,9 @@ void *zalloc(size_t size)
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-//device_get(struct jsontree_context *js_ctx)
-device_get( )
+device_get(struct jsontree_context *js_ctx)
 {
-/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
 
     if (os_strncmp(path, "manufacture", 11) == 0) {
         jsontree_write_string(js_ctx, "Espressif Systems");
@@ -78,8 +77,11 @@ device_get( )
 #if LIGHT_DEVICE
         jsontree_write_string(js_ctx, "Light");
 #endif
+#if 1
+        jsontree_write_string(js_ctx, "IoT-func-server");
+#endif
     }
- */
+
     return 0;
 }
 
@@ -92,26 +94,25 @@ LOCAL struct jsontree_callback device_callback =
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-//userbin_get(struct jsontree_context *js_ctx)
-userbin_get( )
+userbin_get(struct jsontree_context *js_ctx)
 {
-/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
     char string[32];
 
     if (os_strncmp(path, "status", 8) == 0) {
         os_sprintf(string, "200");
     } else if (os_strncmp(path, "user_bin", 8) == 0) {
-    	if (system_upgrade_userbin_check() == 0x00) {
+    	/* if (system_upgrade_userbin_check() == 0x00) {
     		 os_sprintf(string, "user1.bin");
     	} else if (system_upgrade_userbin_check() == 0x01) {
     		 os_sprintf(string, "user2.bin");
-    	} else{
+    	} else */{
     		return 0;
     	}
     }
 
     jsontree_write_string(js_ctx, string);
- */
+
     return 0;
 }
 
@@ -129,10 +130,9 @@ JSONTREE_OBJECT(userinfo_tree,JSONTREE_PAIR("user_info",&userbin_tree));
  * Returns      : result
 *******************************************************************************/
 LOCAL int ICACHE_FLASH_ATTR
-//version_get(struct jsontree_context *js_ctx)
-version_get( )
+version_get(struct jsontree_context *js_ctx)
 {
-/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
     char string[32];
 
     if (os_strncmp(path, "hardware", 8) == 0) {
@@ -142,14 +142,14 @@ version_get( )
         os_sprintf(string, "0.1");
 #endif
     } else if (os_strncmp(path, "sdk_version", 11) == 0) {
-        os_sprintf(string, "%s", system_get_sdk_version());
+        os_sprintf(string, "%s", "1.0.5");
     } else if (os_strncmp(path, "iot_version", 11) == 0) {
     	os_sprintf(string,"%s%d.%d.%dt%d(%s)",VERSION_TYPE,IOT_VERSION_MAJOR,\
     	IOT_VERSION_MINOR,IOT_VERSION_REVISION,device_type,UPGRADE_FALG);
     }
 
     jsontree_write_string(js_ctx, string);
- */
+
     return 0;
 }
 
@@ -172,15 +172,14 @@ JSONTREE_OBJECT(INFOTree,
                 JSONTREE_PAIR("info", &info_tree));
 
 LOCAL int ICACHE_FLASH_ATTR
-//connect_status_get(struct jsontree_context *js_ctx)
-connect_status_get( )
+connect_status_get(struct jsontree_context *js_ctx)
 {
-/*     const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
 
     if (os_strncmp(path, "status", 8) == 0) {
-        jsontree_write_int(js_ctx, user_esp_platform_get_connect_status());
+        //jsontree_write_int(js_ctx, user_esp_platform_get_connect_status());
     }
- */
+
     return 0;
 }
 
@@ -1247,64 +1246,15 @@ webserver_recv(int arg, char *pusrdata, unsigned short length)
         switch (pURL_Frame->Type) {
             case GET:
                 os_printf("\n\nWe have a GET request.\n");
-                response_send(ptrespconn, false);//for test 
+                //response_send(ptrespconn, false);//for test 
 
                 if (os_strcmp(pURL_Frame->pSelect, "client") == 0 &&
                         os_strcmp(pURL_Frame->pCommand, "command") == 0) {
                     if (os_strcmp(pURL_Frame->pFilename, "info") == 0) {
-                //os_printf("\n\nWe have a GET request INFOMATION .\n");
+                os_printf("\n\nWe have a GET request INFOMATION .\n");
                         json_send(ptrespconn, INFOMATION);
-                    }
-                //os_printf("\n\n-------11-------.\n");
-
-                    if (os_strcmp(pURL_Frame->pFilename, "status") == 0) {
-                        json_send(ptrespconn, CONNECT_STATUS);
-                    } else if (os_strcmp(pURL_Frame->pFilename, "scan") == 0) {
-                        char *tmp_str = NULL;
-                        tmp_str = (char *)os_strstr(pusrdata, "&");
-
-                        if (tmp_str == NULL) {
-/*                             if (pscaninfo == NULL) {
-                                pscaninfo = (scaninfo *)os_zalloc(sizeof(scaninfo));
-                            }
-
-                            pscaninfo->pespconn = ptrespconn;
-                            pscaninfo->pagenum = 0;
-                            pscaninfo->page_sn = 0;
-                            pscaninfo->data_cnt = 0;
-                            //wifi_station_scan(NULL, json_scan_cb);
- */                        } else {
-                            tmp_str ++;
-
-                            if (os_strncmp(tmp_str, "page", 4) == 0) {
-/*                                 if (pscaninfo != NULL) {
-                                    pscaninfo->pagenum = *(tmp_str + 5);
-                                    pscaninfo->pagenum -= 0x30;
-
-                                    if (pscaninfo->pagenum > pscaninfo->totalpage || pscaninfo->pagenum == 0) {
-                                        response_send(ptrespconn, false);
-                                    } else {
-                                        json_send(ptrespconn, SCAN);
-                                    }
-                                } else {
-                                    response_send(ptrespconn, false);
-                                }
- */                            } else if(os_strncmp(tmp_str, "finish", 6) == 0){
-/*                             	bss_temp = bss_head;
-                            	while(bss_temp != NULL) {
-                            		bss_head = bss_temp->next.stqe_next;
-                            		os_free(bss_temp);
-                            		bss_temp = bss_head;
-                            	}
-                            	bss_head = NULL;
-                            	bss_temp = NULL;
-                            	response_send(ptrespconn, true);
- */                            } else {
-                                response_send(ptrespconn, false);
-                            }
-                        }
                     } else {
-                //os_printf("\n\n-------22-------.\n");
+                os_printf("\n\n-------22-------.\n");
                         response_send(ptrespconn, false);
                     }
                 } else if (os_strcmp(pURL_Frame->pSelect, "config") == 0 &&

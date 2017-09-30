@@ -29,7 +29,8 @@
  * This file is part of the Contiki operating system.
  */
  
-#ifdef JSON_FORMAT
+//#ifdef JSON_FORMAT
+#if 1
  
 #include "json/jsonparse.h"
 #include "osapi.h"
@@ -153,12 +154,10 @@ jsonparse_next(struct jsonparse_state *state)
  
   switch(c) {
  
-  case '{
-':
+  case '{':
     push(state, c);
     return c;
-  case '
-}':
+  case '}':
     if(s == ':' && state->vtype != 0) {
  
 /*       printf("Popping vtype: '%c'\n", state->vtype); */
@@ -166,8 +165,7 @@ jsonparse_next(struct jsonparse_state *state)
       s = jsonparse_get_type(state);
      
 }
-    if(s == '{
-') {
+    if(s == '{') {
  
       pop(state);
      
@@ -211,11 +209,9 @@ jsonparse_next(struct jsonparse_state *state)
 }
     return c;
   case '"':
-    if(s == '{
-' || s == '[' || s == ':') {
+    if(s == '{' || s == '[' || s == ':') {
  
-      atomic(state, c = (s == '{
-' ? JSON_TYPE_PAIR_NAME : c));
+      atomic(state, c = (s == '{' ? JSON_TYPE_PAIR_NAME : c));
      
 } else {
  
@@ -225,8 +221,7 @@ jsonparse_next(struct jsonparse_state *state)
 }
     return c;
   case '[':
-    if(s == '{
-' || s == '[' || s == ':') {
+    if(s == '{' || s == '[' || s == ':') {
  
       push(state, c);
      
