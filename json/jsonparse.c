@@ -34,7 +34,7 @@
  
 #include "json/jsonparse.h"
 #include "osapi.h"
-//#include <stdlib.h>
+#include <stdlib.h>
 //#include <string.h>
  
 /*--------------------------------------------------------------------*/
